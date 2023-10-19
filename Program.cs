@@ -14,7 +14,7 @@ namespace OdliczanieOdleglosciMiedzyPkt
             randomPkt randomPkt = new randomPkt();
             double n = 10;
             randomPkt.RandomGeneration(n, out int liczbaPrzejsc);
-            randomPkt.PktPoczatekIKoniec(0,0, liczbaPrzejsc);
+            randomPkt.PktPoczatekIKoniec(0, 0, liczbaPrzejsc);
         }
 
         public class randomPkt
@@ -22,24 +22,24 @@ namespace OdliczanieOdleglosciMiedzyPkt
             double k;
             List<double> listaWygenerowanychPkt = new List<double>();
 
-            public double RandomGeneration(double n, out int liczbaPrzejsc) 
+            public double RandomGeneration(double n, out int liczbaPrzejsc)
             {
-                Random randomk = new Random(); //losowanie liczby przejść k
-                k = randomk.NextDouble()*(n-2)+1;
+                Random randomk = new Random();
+                k = randomk.NextDouble() * (n - 2) + 1;
                 liczbaPrzejsc = (int)k;
                 Console.WriteLine($"Liczba przejść przez punkty jest równa: {liczbaPrzejsc}");
-                
+
                 Random randomn = new Random();
 
-                for (double i = 0; i<=n-1; i++)
+                for (double i = 0; i <= n - 1; i++)
                 {
-                    double randomSzerokosc = Math.Round(randomn.NextDouble() * 50, 2); // losowanie szerokości geograficznej
-                    double randomDlugosc = Math.Round(randomn.NextDouble() * 50, 2); // losowanie długości geograficznej
+                    double randomSzerokosc = Math.Round(randomn.NextDouble() * 50, 2);
+                    double randomDlugosc = Math.Round(randomn.NextDouble() * 50, 2);
                     listaWygenerowanychPkt.Add(randomSzerokosc);
                     listaWygenerowanychPkt.Add(randomDlugosc);
                 }
 
-                for (int j = 0; j < listaWygenerowanychPkt.Count; j += 2) //wyświetlanie listy
+                for (int j = 0; j < listaWygenerowanychPkt.Count; j += 2)
                 {
                     Console.WriteLine($"Punkt {j / 2 + 1}: Szerokość: {listaWygenerowanychPkt[j]}, Długość: {listaWygenerowanychPkt[j + 1]}");
                 }
@@ -50,26 +50,24 @@ namespace OdliczanieOdleglosciMiedzyPkt
             {
                 Random random = new Random();
 
-                int losowyIndeksPoczatek = random.Next(listaWygenerowanychPkt.Count / 2) * 2; // uwzględnienie skoku o 2
+                int losowyIndeksPoczatek = random.Next(listaWygenerowanychPkt.Count / 2) * 2;
                 double poczatekSzerokosc = listaWygenerowanychPkt[losowyIndeksPoczatek];
                 double poczatekDlugosc = listaWygenerowanychPkt[losowyIndeksPoczatek + 1];
 
-                int losowyIndeksKoniec = random.Next(listaWygenerowanychPkt.Count / 2) * 2; // uwzględnienie skoku o 2
+                int losowyIndeksKoniec = random.Next(listaWygenerowanychPkt.Count / 2) * 2;
                 double koniecSzerokosc = listaWygenerowanychPkt[losowyIndeksKoniec];
                 double koniecDlugosc = listaWygenerowanychPkt[losowyIndeksKoniec + 1];
 
                 Console.WriteLine($"\nWylosowany punkt początkowy: Szerokość: {poczatekSzerokosc}, Długość: {poczatekDlugosc}");
                 Console.WriteLine($"Wylosowany punkt końcowy: Szerokość: {koniecSzerokosc}, Długość: {koniecDlugosc}");
 
-                List<double> trasa = new List<double>(); // lista trasy
-                List<double> dostepnePunkty = new List<double>(listaWygenerowanychPkt); // lista dostepnych punktów do sprawdzenia
+                List<double> trasa = new List<double>();
+                List<double> dostepnePunkty = new List<double>(listaWygenerowanychPkt);
 
                 trasa.Add(poczatekSzerokosc); trasa.Add(poczatekDlugosc);
                 dostepnePunkty.Remove(poczatekSzerokosc); dostepnePunkty.Remove(poczatekDlugosc);
 
-                trasa.Add(koniecSzerokosc); trasa.Add(koniecDlugosc);
-                dostepnePunkty.Remove(koniecSzerokosc); dostepnePunkty.Remove(koniecDlugosc);
-                while (dostepnePunkty.Count > 0 && trasa.Count / 2 < liczbaPrzejsc + 1)
+                while (dostepnePunkty.Count > 0 && trasa.Count / 2 < liczbaPrzejsc)
                 {
                     double ostatniSzerokosc = trasa[trasa.Count - 2];
                     double ostatniDlugosc = trasa[trasa.Count - 1];
@@ -78,10 +76,10 @@ namespace OdliczanieOdleglosciMiedzyPkt
 
                     for (int i = 0; i < dostepnePunkty.Count; i += 2)
                     {
-                        double odlegloscDoKonca = Math.Sqrt(Math.Pow(ostatniSzerokosc - koniecSzerokosc, 2) + Math.Pow(ostatniDlugosc - koniecDlugosc, 2));
-                        if (odlegloscDoKonca < najmniejszaOdleglosc)
+                        double odleglosc = Math.Sqrt(Math.Pow(ostatniSzerokosc - dostepnePunkty[i], 2) + Math.Pow(ostatniDlugosc - dostepnePunkty[i + 1], 2));
+                        if (odleglosc < najmniejszaOdleglosc)
                         {
-                            najmniejszaOdleglosc = odlegloscDoKonca;
+                            najmniejszaOdleglosc = odleglosc;
                             indeksNajblizszego = i;
                         }
                     }
@@ -95,17 +93,12 @@ namespace OdliczanieOdleglosciMiedzyPkt
                 trasa.Add(koniecSzerokosc);
                 trasa.Add(koniecDlugosc);
 
-                for (int j = 0; j < trasa.Count; j += 2) //wyświetlanie listy
-                    {
-                        Console.WriteLine($"Punkt {j / 2 + 1}: Szerokość: {trasa[j]}, Długość: {trasa[j + 1]}");
-                    }
+                Console.WriteLine("\nNajkrótsza trasa:");
+                for (int i = 0; i < trasa.Count; i += 2)
+                {
+                    Console.WriteLine($"Punkt {i / 2 + 1}: Szerokość: {trasa[i]}, Długość: {trasa[i + 1]}");
+                }
 
-                    Console.WriteLine("\nNajkrótsza trasa:");
-                    for (int i = 0; i < trasa.Count; i += 2)
-                    {
-                        Console.WriteLine($"Punkt {i / 2 + 1}: Szerokość: {trasa[i]}, Długość: {trasa[i + 1]}");
-                    }
-                
                 return 0;
             }
         }
